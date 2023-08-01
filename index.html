@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8" />
+
+<body style="height: 120vh;position: relative;">
+    <div style="position: sticky;top: 0;">
+            hello
+        </div>
+    <h1>不要な改行取り除くよアプリ</h1>
+    <textarea name="textarea" id="textarea" cols="30" rows="10"></textarea>
+    <div style="display: flex;">
+        <button type="button" id="textarea_clear_button">クリア</button>
+        <button type="button" id="output_area_copy_button">コピー</button>
+        <div id="copyed_text" style="display: none;">Copyed!</div>
+    </div>
+
+    <div id="output_area">
+        <!-- insert_js -->
+    </div>
+
+    <script>
+        const textarea = document.getElementById('textarea');
+        const textarea_clear_button = document.getElementById('textarea_clear_button');
+        const output_area = document.getElementById('output_area');
+        const output_area_copy_button = document.getElementById('output_area_copy_button');
+        const copyed_text = document.getElementById('copyed_text');
+        const event_actions = ['keyup', 'paste'];
+        for (let i = 0;event_actions.length > i;++i) {
+            textarea.addEventListener(event_actions[i], function (e) {
+                let result = null;
+                let str = '';
+                if (e.type.toLowerCase() === 'paste') {
+                    str = e.clipboardData.getData('text/plain');
+                } else {
+                    str = e.target.value;
+                }
+                let regex = /[^\n]+\n?/g;
+                let matches = str.match(regex);
+                if (matches !== null && matches.length) {
+                    let array = [];
+                    for (let i = 0;matches.length > i;++i) {
+                        array.push(matches[i].replace(/\n$/, ''));
+                    }
+                    result = array.join(' ');
+                    output_area.innerHTML = result;
+                } else {
+                    output_area.innerText = '';
+                }
+            });
+        }
+
+        textarea_clear_button.addEventListener('click', function () {
+            textarea.value = '';
+            textarea.focus();
+            output_area.innerText = '';
+            copyed_text.style.display = 'none';
+        });
+
+        output_area_copy_button.addEventListener('click', function () {
+            copyToClipboard(output_area.innerText);
+            copyed_text.style.display = 'block';
+        });
+
+        // 以下はhttps://maku.blog/p/buk5i2o/で紹介されていたコードをコピペさせていただきました。
+        function copyToClipboard(text){
+            // テキストコピー用の一時要素を作成
+            const pre = document.createElement('pre');
+
+            // テキストを選択可能にしてテキストセット
+            pre.style.webkitUserSelect = 'auto';
+            pre.style.userSelect = 'auto';
+            pre.textContent = text;
+
+            // 要素を追加、選択してクリップボードにコピー
+            document.body.appendChild(pre);
+            document.getSelection().selectAllChildren(pre);
+            const result = document.execCommand('copy');
+
+            // 要素を削除
+            document.body.removeChild(pre);
+
+            return result;
+        }
+    </script>
+</body>
+</html>
