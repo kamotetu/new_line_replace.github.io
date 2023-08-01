@@ -1,2 +1,2 @@
 # new_line_replace.github.io
-不要な改行取り除くアプリ
+不要な改行取り除くよアプリ
